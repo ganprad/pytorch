@@ -46,7 +46,6 @@ class TestStateDict(TestCase):
                               nn.ReLU(),
                               nn.Linear(32, 16),
                               nn.ReLU())
-        model.train()
         # Quantize
         torch.quantization.fuse_modules(model, [["0", "1"], ["2", "3"]], inplace=True)
         model = torch.quantization.QuantWrapper(model)
