@@ -3730,3 +3730,16 @@ class DistributedTest:
 
             inp = TestNamedTupleInput_1(a, b)
             model(inp, type(inp))
+
+        @require_backend({"gloo", "nccl"})
+        @require_backends_available({"gloo", "nccl"})
+        @skip_if_lt_x_gpu(2)
+        @skip_if_rocm
+        def test_remove_prefix_from_state_dict_if_exists(self):
+            model = Net()
+            ddp_model = torch.nn.parallel.DistributedDataParallel(copy.deepcopy(model).cuda(self.rank),
+                                                                  device_ids=[self.rank])
+            ddp_state_dict = torch.nn.parallel.distributed.remove_prefix_from_state_dict_if_exists(ddp_model.state_dict(),
+                                                                                              prefix='module.')
+            self.assertEqual(model.state_dict().keys(), ddp_state_dict.keys())
+            self.assertEqual(model.state_dict()._metadata.keys(), ddp_state_dict._metadata.keys())
