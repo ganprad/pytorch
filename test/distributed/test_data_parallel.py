@@ -814,8 +814,7 @@ class TestDataParallel(TestCase):
                                     nn.Linear(32, 16),
                                     nn.ReLU())
         dp_model = nn.DataParallel(deepcopy(model).cuda())
-        dp_state_dict = nn.parallel.distributed.remove_prefix_from_state_dict_if_exists(dp_model.state_dict(),
-                                                                                              prefix='module.')
+        dp_state_dict = dp.distributed.remove_prefix_from_state_dict_if_exists(dp_model.state_dict(), prefix='module.')
         self.assertEqual(model.state_dict().keys(), dp_state_dict.keys())
         self.assertEqual(model.state_dict()._metadata.keys(), dp_state_dict._metadata.keys())
 
